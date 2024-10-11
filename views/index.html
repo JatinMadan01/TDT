@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Scheduler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Task Scheduler</h1>
+
+  <form id="task-form">
+    <input type="text" id="taskName" placeholder="Task Name" required>
+    <input type="text" id="frequency" placeholder="Frequency (cron format)" required>
+    <button type="submit">Add Task</button>
+  </form>
+
+  <h2>Scheduled Tasks</h2>
+  <ul id="task-list"></ul>
+
+  <script>
+ 
+    document.getElementById('task-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const taskName = document.getElementById('taskName').value;
+      const frequency = document.getElementById('frequency').value;
+
+      const res = await fetch('/api/task', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ taskName, frequency }),
+      });
+      const data = await res.json();
+      alert('Task Added!');
+    });
+
+ 
+    async function fetchTasks() {
+      const res = await fetch('/api/tasks');
+      const tasks = await res.json();
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        taskList.innerHTML += `<li>${task.taskName} - ${task.frequency}</li>`;
+      });
+    }
+
+    fetchTasks();
+  </script>
+</body>
+</html>
